@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- Shell detection now prefers the nearest parent shell (`bash`, `zsh`, or `fish`) to avoid emitting fish syntax inside nested bash sessions.
+
 ## [0.1.0] - 2026-02-18
 
 ### Added

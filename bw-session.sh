@@ -55,36 +55,24 @@ print_version() {
 }
 
 detect_shell_name() {
-  local pid="${PPID:-}" comm="" sh="" fallback=""
+  local pid="${PPID:-}" comm="" sh=""
 
-  # Walk process ancestry and prefer the real interactive shell.
-  # Priority: fish > zsh > bash.
+  # Walk process ancestry and use the nearest parent shell.
   for _ in 1 2 3 4 5 6 7 8; do
     [[ -n "${pid}" ]] || break
     comm="$(ps -p "${pid}" -o comm= 2>/dev/null | awk '{print $1}')"
     comm="${comm##*/}"
     comm="${comm#-}"
     case "${comm}" in
-      fish)
-        printf 'fish'
+      fish|zsh|bash)
+        printf '%s' "${comm}"
         return 0
-        ;;
-      zsh)
-        [[ -z "${fallback}" ]] && fallback="zsh"
-        ;;
-      bash)
-        [[ -z "${fallback}" ]] && fallback="bash"
         ;;
       *)
         ;;
     esac
     pid="$(ps -p "${pid}" -o ppid= 2>/dev/null | tr -d '[:space:]')"
   done
-
-  if [[ -n "${fallback}" ]]; then
-    printf '%s' "${fallback}"
-    return 0
-  fi
 
   sh="${SHELL##*/}"
   sh="${sh#-}"
